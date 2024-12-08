@@ -1,0 +1,2 @@
+App.js is for interacting with the database, build-database will be for generating the database using a node.js script.
+Might put the 12 functionalities into their own seperate file called like functions.js; prolly can just leave in app.js
