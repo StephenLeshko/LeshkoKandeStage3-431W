@@ -99,6 +99,19 @@ const schemaQueries = `
     );
 `
 
+const indexQueries = `
+CREATE INDEX IF NOT EXISTS idx_fragrances_name ON Fragrances(name);
+CREATE INDEX IF NOT EXISTS idx_fragrances_brand ON Fragrances(brand);
+CREATE INDEX IF NOT EXISTS idx_customers_cid ON Customers(cid);
+CREATE INDEX IF NOT EXISTS idx_retailers_ret_id ON Retailers(ret_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_fid_ret_id ON Inventory(fid, ret_id);
+CREATE INDEX IF NOT EXISTS idx_promotions_fid_ret_id_dates ON Promotions(fid, ret_id, start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_orders_oid ON Orders(oid);
+CREATE INDEX IF NOT EXISTS idx_orders_ret_id_date ON Orders(ret_id, date);
+CREATE INDEX IF NOT EXISTS idx_reviews_fid_cid ON Reviews(fid, cid);
+CREATE INDEX IF NOT EXISTS idx_shipping_oid ON Shipping(oid);
+`
+
 const insertData = () => {
     for(const cologne of colognes){ //Fragrances (1)
         db.run(
@@ -245,8 +258,14 @@ const setupDatabase = () => {
             console.log('Error making schema,', err.message)
             process.exit(1)
         }
-        insertData()
-        db.close()
+        db.exec(indexQueries, (err) => {
+            if(err){
+                console.log('Error creating indices,', err.message)
+                process.exit(1)
+            }
+            insertData()
+            db.close()
+        })
     })
 }
 setupDatabase()
